@@ -50,7 +50,16 @@ namespace EPUBWordCounter
                 Console.WriteLine($"{word}: {wordCount[word]} occurrences");
             }
 
-            
+                        // Get the top 10 longest words
+            var longestWords = allWords.OrderByDescending(word => word.Length)
+                                      .Take(10);
+
+            // Display top longest words
+            Console.WriteLine("Top 10 longest words:");
+            foreach (string word in longestWords)
+            {
+                Console.WriteLine($"{word}: Length {word.Length}");
+            }
 
         }
     }
