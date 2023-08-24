@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using VersOne.Epub;
+using System.Runtime.CompilerServices;
+using Microsoft.VisualBasic;
 
 namespace EPUBWordCounter
 {
@@ -10,57 +11,25 @@ namespace EPUBWordCounter
     {
         static void Main(string[] args)
         {
-            string epubFilePath = @"C:\Karthik\zaz\BookAutopsy\source\The Idiot.epub";
+            string epubFilePath = @"C:\Karthik\zaz\BookAutopsy\assets\theidiot.epub";
+            string nounList = @"C:\Karthik\zaz\BookAutopsy\assets\nounlist.txt";
+            var fileHelper = new FileHelper();
+            List<string> nouns = fileHelper.getWordsFromText(nounList);
+            
+            var epubAnalyzer = new EpubAnalyzer();
 
-            EpubBook epubBook = EpubReader.ReadBook(epubFilePath);
+            Dictionary<string, int> dictWordCount = epubAnalyzer.getEpubWordCount(epubFilePath);
+            int limit = 500;
 
-            List<string> allWords = new List<string>();
-
-            foreach (EpubLocalTextContentFile textContentFile in epubBook.ReadingOrder)
-            {
-                string content = textContentFile.Content;
-                string[] words = content.Split(new char[] { ' ', '\t', '\n', '\r', '.', ',', ';', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
-                allWords.AddRange(words);
-            }
-
-            // Count word occurrences
-            Dictionary<string, int> wordCount = new Dictionary<string, int>();
-            foreach (string word in allWords)
-            {
-                string cleanedWord = word.ToLower(); // Convert to lowercase for consistent counting
-                if (wordCount.ContainsKey(cleanedWord))
-                {
-                    wordCount[cleanedWord]++;
-                }
-                else
-                {
-                    wordCount[cleanedWord] = 1;
-                }
-            }
-
-            // Get top 10 words
-            var topWords = wordCount.OrderByDescending(pair => pair.Value)
-                                   .Take(10)
-                                   .Select(pair => pair.Key);
-
-            // Display top words
-            Console.WriteLine("Top 10 most used words:");
-            foreach (string word in topWords)
-            {
-                Console.WriteLine($"{word}: {wordCount[word]} occurrences");
-            }
-
-                        // Get the top 10 longest words
-            var longestWords = allWords.OrderByDescending(word => word.Length)
-                                      .Take(10);
-
-            // Display top longest words
-            Console.WriteLine("Top 10 longest words:");
-            foreach (string word in longestWords)
-            {
-                Console.WriteLine($"{word}: Length {word.Length}");
-            }
-
+            var topWords = dictWordCount
+                .Where(x => nouns.Contains(x.Key))
+                .OrderByDescending(pair => pair.Value)
+                .Take(limit);
+            
+            foreach (var word in topWords)
+            Console.WriteLine($"{word.Key} - {word.Value} times");
         }
+
+
     }
 }
