@@ -34,7 +34,7 @@ namespace EPUBWordCounter
             return cleanedWords.ToList();
         }
 
-        public List<String> getWordsFromText(string path)
+        public List<String> GetWordsFromText(string path)
         {
             //returns list of words from a text file with each line having each word
             var words = new List<String>();

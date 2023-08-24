@@ -1,33 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using Microsoft.VisualBasic;
-
-namespace EPUBWordCounter
+﻿namespace EPUBWordCounter
 {
     class Program
     {
         static void Main(string[] args)
         {
-            string epubFilePath = @"C:\Karthik\zaz\BookAutopsy\assets\theidiot.epub";
-            string nounList = @"C:\Karthik\zaz\BookAutopsy\assets\nounlist.txt";
+            string epubFilePath = @"assets\xyz.epub";
+            string nounList = @"assets\nounlist.txt";
+            string verbList = @"assets\verblist.txt";
+            string commonList = @"assets\commonlist.txt";
+            int limit = 50;
+
             var fileHelper = new FileHelper();
-            List<string> nouns = fileHelper.getWordsFromText(nounList);
+            List<string> nouns = fileHelper.GetWordsFromText(nounList);
+            List<string> verbs = fileHelper.GetWordsFromText(verbList);
+            List<string> commonWords = fileHelper.GetWordsFromText(commonList);
             
-            var epubAnalyzer = new EpubAnalyzer();
+            var epubAnalyzer = new WordAnalyzer();
 
-            Dictionary<string, int> dictWordCount = epubAnalyzer.getEpubWordCount(epubFilePath);
-            int limit = 500;
+            Dictionary<string, int> dictWordCount = epubAnalyzer.GetEpubWordCount(epubFilePath);
 
-            var topWords = dictWordCount
-                .Where(x => nouns.Contains(x.Key))
-                .OrderByDescending(pair => pair.Value)
-                .Take(limit);
-            
-            foreach (var word in topWords)
-            Console.WriteLine($"{word.Key} - {word.Value} times");
+            var wordAnalyzer = new WordAnalyzer();
+
+            wordAnalyzer.PrintMostUsedWords(dictWordCount, nouns, "nouns", limit);        
+            wordAnalyzer.PrintMostUsedWords(dictWordCount, verbs, "verb", limit);
+            wordAnalyzer.PrintMostUsedWords(dictWordCount, commonWords, "common words", limit);
         }
 
 
